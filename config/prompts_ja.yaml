@@ -1,0 +1,52 @@
+# config/prompts_ja.yaml — CMN-C1-042 Sales Call & Meeting Debrief Summary Agent
+# Japanese email formality branches for StructuredExtractNode.
+# Selected at runtime via config.yaml -> email.formality_level: "formal" | "semi_formal" | "casual"
+
+email_formality:
+  formal:
+    instructions: |
+      以下のミーティングサマリーをもとに、丁寧語・敬語（ビジネス敬語）を使用した
+      フォローアップメールを作成してください。
+      初対面または格式のあるエンタープライズ顧客向けの文体を使用してください。
+      件名（Subject）と本文を含め、以下の形式で出力してください：
+      Subject: <件名>
+
+      <本文>
+
+      メール本文には以下を含めてください：
+      - 面談のお礼
+      - 主な議論内容・合意事項の簡潔な確認
+      - 次のステップ（合意された場合）
+      - 締めの挨拶
+
+  semi_formal:
+    instructions: |
+      以下のミーティングサマリーをもとに、丁寧語を使用したフォローアップメールを
+      作成してください。
+      関係が構築済みの顧客や温かみのある商談相手向けの文体を使用してください。
+      件名（Subject）と本文を含め、以下の形式で出力してください：
+      Subject: <件名>
+
+      <本文>
+
+      メール本文には以下を含めてください：
+      - 面談のお礼
+      - 主な合意事項の確認
+      - 次のステップ（合意された場合）
+      - 締めの挨拶
+
+  casual:
+    instructions: |
+      以下のミーティングサマリーをもとに、平語（カジュアルな口調）を使用した
+      フォローアップメールを作成してください。
+      社内関係者または親密な既存顧客向けの文体を使用してください。
+      件名（Subject）と本文を含め、以下の形式で出力してください：
+      Subject: <件名>
+
+      <本文>
+
+      メール本文には以下を含めてください：
+      - 面談の簡単なお礼
+      - 主な確認事項
+      - 次のアクション（あれば）
+

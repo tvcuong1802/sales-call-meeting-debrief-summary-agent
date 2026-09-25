@@ -1,0 +1,64 @@
+# config/config.yaml — CMN-C1-042 Sales Call & Meeting Debrief Summary Agent
+# Runtime configuration. Loaded by SalesDebriefAgent.__init__() via yaml.safe_load().
+#
+# The root-level AgentRegistry manifest schema (the CoE decision of record) has no place for the
+# `config:` block config/agent.yaml used to carry, so that block was removed. It held only
+# the scaffold defaults `max_retry: 3` and `timeout_seconds: 30`, and NEITHER is carried
+# over here on purpose: this template's live knobs are `llm.retry.max_attempts` and
+# `llm.timeout` below, and src/retry.py documents outright that "there is no separate
+# `timeout_seconds` config key". Re-stating the dead pair here would create two
+# contradictory sources for the same setting, which is worse than dropping them.
+
+agent:
+  # Empty means FOLLOW THE TRANSCRIPT: the debrief is for whoever wrote the notes, and
+  # Marketplace is a multi-user surface where a fixed value is wrong for half the
+  # audience -- measured 2026-08-28, an English transcript came back as a Japanese
+  # debrief on every request. Set "en" or "ja" to pin a single-language deployment.
+  output_language: ""             # "" follow the request | "en" | "ja"
+
+# PAIRING REQUIRED: methodology must match the CRM schema fields below.
+#
+#   methodology: "bant"   → crm.schema_path must use a BANT-compatible schema
+#                           (fields: Name, StageName, Amount, NextStep, Description, CloseDate)
+#                           Bundled: config/schemas/salesforce_opportunity.json
+#
+#   methodology: "meddic" → crm.schema_path must use a MEDDIC-compatible schema
+#                           (fields: Metrics, EconomicBuyer, DecisionCriteria, etc.)
+#                           NOTE: neither bundled schema is MEDDIC-compatible.
+#                           Citizen developers must supply their own schema file.
+#
+# WARNING: Mismatched pairs (e.g. bant + hubspot_deal.json, or meddic + salesforce)
+# produce empty crm_fields output — CRMSchemaValidateNode strips all "additional"
+# fields when additionalProperties=false. No error is raised; data is silently lost.
+methodology: "bant"               # "bant" | "meddic" — CRM extraction methodology
+
+email:
+  formality_level: "formal"       # "formal" | "semi_formal" | "casual"
+
+crm:
+  schema_path: "config/schemas/salesforce_opportunity.json"
+  # Bundled schemas:
+  #   salesforce_opportunity.json — use with methodology: "bant"
+  #   hubspot_deal.json           — NOT aligned to either bundled methodology;
+  #                                 supply matching prompts if using HubSpot fields
+
+llm:
+  model: "gpt-4o"
+  max_tokens: 2048
+  temperature: 0.0
+  timeout: 60           # per-request timeout passed to the LLM client (seconds).
+                        # The retry wrapper (call_with_retry_typed) does not enforce a
+                        # deadline itself — timeout is the LLM client's responsibility.
+                        # When the client raises TimeoutError/TimeoutRetryError, the retry
+                        # policy kicks in (transcript truncation, then LLM_TIMEOUT error).
+  retry:
+    max_attempts: 3
+    backoff_factor: 2.0
+
+nuance:
+  dictionary_path: "config/nuance_ja.yaml"
+
+
+# security:
+#   redact_patterns: []   # Optional: list of regex strings to redact from output (OutputFormatNode S-3 gate).
+#                          # Example: ["CONFIDENTIAL|INTERNAL USE ONLY", "社外秘"]

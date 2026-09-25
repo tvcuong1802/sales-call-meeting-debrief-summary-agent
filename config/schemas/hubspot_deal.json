@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HubSpotDeal",
+  "description": "HubSpot Deal object — key fields for CMN-C1-042 CRM extraction",
+  "type": "object",
+  "properties": {
+    "dealname": {
+      "type": ["string", "null"],
+      "description": "Deal name"
+    },
+    "dealstage": {
+      "type": ["string", "null"],
+      "description": "Current deal stage (pipeline-specific value)"
+    },
+    "amount": {
+      "type": ["number", "null"],
+      "description": "Deal amount (currency value)"
+    },
+    "closedate": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Expected close date (ISO 8601 date string, e.g. 2026-06-30)"
+    },
+    "notes_last_contacted": {
+      "type": ["string", "null"],
+      "description": "Notes from last contact / meeting summary"
+    },
+    "hs_next_step": {
+      "type": ["string", "null"],
+      "description": "Next step agreed in meeting"
+    }
+  },
+  "additionalProperties": false
+}

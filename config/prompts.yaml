@@ -1,0 +1,56 @@
+# config/prompts.yaml — CMN-C1-042 Sales Call & Meeting Debrief Summary Agent
+# Methodology prompt blocks for StructuredExtractNode.
+# Selected at runtime via config.yaml -> methodology: "bant" | "meddic"
+
+methodologies:
+  bant:
+    fields:
+      - Name
+      - StageName
+      - Amount
+      - NextStep
+      - Description
+      - CloseDate
+    instructions: |
+      Extract the following BANT sales qualification fields from the transcript into crm_fields.
+      CRITICAL: For any field not explicitly stated in the transcript, you MUST output null.
+      Do NOT infer, estimate, or fabricate values. If a field was not discussed, its value is null.
+
+      Fields to extract:
+      - Name: The opportunity or deal name, or account/company name discussed. null if not mentioned.
+      - StageName: Current sales stage. Must be one of: Prospecting, Qualification, Needs Analysis,
+        Value Proposition, Id. Decision Makers, Perception Analysis, Proposal/Price Quote,
+        Negotiation/Review, Closed Won, Closed Lost. null if not determinable from transcript.
+      - Amount: Expected deal amount as a plain number (no currency symbol). null if not discussed.
+      - NextStep: The specific next action or step explicitly agreed upon in the meeting. null if none agreed.
+      - Description: A concise summary of the deal context, key discussion points, and current situation.
+        null if insufficient information.
+      - CloseDate: Expected close or decision date as ISO 8601 string (YYYY-MM-DD). null if not mentioned.
+
+  meddic:
+    fields:
+      - Metrics
+      - EconomicBuyer
+      - DecisionCriteria
+      - DecisionProcess
+      - IdentifyPain
+      - Champion
+    instructions: |
+      Extract the following MEDDIC sales qualification fields from the transcript into crm_fields.
+      CRITICAL: For any field not explicitly stated in the transcript, you MUST output null.
+      Do NOT infer, estimate, or fabricate values. If a field was not discussed, its value is null.
+
+      Fields to extract:
+      - Metrics: Quantifiable business outcomes or success metrics the customer mentioned
+        (e.g., "reduce processing time by 30%", "save 5 hours/week"). null if not discussed.
+      - EconomicBuyer: The person with final budget authority identified in the transcript.
+        null if not mentioned.
+      - DecisionCriteria: The specific criteria the customer will use to evaluate and select a solution.
+        null if not discussed.
+      - DecisionProcess: The steps, timeline, or process the customer described for making their
+        purchase decision. null if not described.
+      - IdentifyPain: The specific business pain, problem, or challenge the customer explicitly
+        articulated. null if not stated.
+      - Champion: The internal advocate or sponsor at the customer organization who supports
+        your solution. null if not identified.
+

@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SalesforceOpportunity",
+  "description": "Salesforce Opportunity object — key fields for CMN-C1-042 CRM extraction",
+  "type": "object",
+  "properties": {
+    "Name": {
+      "type": ["string", "null"],
+      "description": "Opportunity name / deal name"
+    },
+    "StageName": {
+      "type": ["string", "null"],
+      "description": "Current sales stage",
+      "enum": [
+        "Prospecting",
+        "Qualification",
+        "Needs Analysis",
+        "Value Proposition",
+        "Id. Decision Makers",
+        "Perception Analysis",
+        "Proposal/Price Quote",
+        "Negotiation/Review",
+        "Closed Won",
+        "Closed Lost",
+        null
+      ]
+    },
+    "Amount": {
+      "type": ["number", "null"],
+      "description": "Expected deal amount (currency value)"
+    },
+    "NextStep": {
+      "type": ["string", "null"],
+      "description": "Next action / next step agreed in meeting"
+    },
+    "Description": {
+      "type": ["string", "null"],
+      "description": "Meeting discussion summary / deal context"
+    },
+    "CloseDate": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Expected close date (ISO 8601 date string, e.g. 2026-06-30)"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,88 @@
+# config/nuance_ja.yaml — Japanese business nuance dictionary for CMN-C1-042
+#
+# Each entry maps a regex pattern to a nuance tag.
+# Tags: DECLINE | DEFER | SOFT_DECLINE | POSITIVE
+#
+# Used by NuanceClassifyNode to annotate the cleaned transcript with inline
+# [NUANCE:TAG] markers before the single-pass LLM extraction call.
+# This helps the LLM correctly classify deal status rather than misreading
+# polite Japanese phrases as agreement or positive signals.
+#
+# Config key: nuance.dictionary_path (injectable — see config/config.yaml)
+#
+# Pattern format: Python re module regex strings (re.sub compatible).
+#
+# ORDERING RULE (mandatory): More specific (longer) patterns MUST come before
+# their substrings. The combined regex uses first-match-wins alternation.
+# Violation causes double-tagging (e.g., DEFER+DECLINE on one phrase).
+#
+# Examples of required ordering:
+#   "前向きに検討させていただきます"  before  "検討させていただきます"
+#   "持ち帰って検討させていただきます" before  "検討させていただきます"
+#   "ぜひ進めましょう"               before  "ぜひ"
+
+# ── DECLINE — Polite rejection phrases ──────────────────────────────────────
+# Compound forms first, then shorter substrings.
+- pattern: "前向きに検討させていただきます"
+  tag: DECLINE
+
+- pattern: "前向きに検討します"
+  tag: DECLINE
+
+- pattern: "ポジティブに検討します"
+  tag: DECLINE
+
+- pattern: "検討させていただきます"
+  tag: DECLINE
+
+# ── DEFER — Stalling / postponing phrases ───────────────────────────────────
+# "持ち帰って検討させていただきます" contains "検討させていただきます" (DECLINE).
+# It must appear in this file before that DECLINE entry so the combined regex
+# tags it as DEFER (first match wins) rather than producing DEFER+DECLINE.
+- pattern: "持ち帰って検討させていただきます"
+  tag: DEFER
+
+- pattern: "持ち帰って検討します"
+  tag: DEFER
+
+- pattern: "社内で確認します"
+  tag: DEFER
+
+- pattern: "上長に相談します"
+  tag: DEFER
+
+- pattern: "次回までに確認します"
+  tag: DEFER
+
+# ── SOFT_DECLINE — Soft rejection / hesitation phrases ──────────────────────
+- pattern: "ちょっと難しいかもしれません"
+  tag: SOFT_DECLINE
+
+- pattern: "少し難しい状況です"
+  tag: SOFT_DECLINE
+
+- pattern: "予算の関係で難しい"
+  tag: SOFT_DECLINE
+
+- pattern: "今は優先度が低い"
+  tag: SOFT_DECLINE
+
+- pattern: "タイミングが合わない"
+  tag: SOFT_DECLINE
+
+# ── POSITIVE — Genuine agreement / interest phrases ─────────────────────────
+# Compound forms first; "ぜひ" alone must come after "ぜひ進めましょう".
+- pattern: "前向きに進めたい"
+  tag: POSITIVE
+
+- pattern: "ぜひ進めましょう"
+  tag: POSITIVE
+
+- pattern: "是非お願いします"
+  tag: POSITIVE
+
+- pattern: "おっしゃる通り"
+  tag: POSITIVE
+
+- pattern: "ぜひ"
+  tag: POSITIVE
